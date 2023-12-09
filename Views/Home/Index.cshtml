@@ -67,16 +67,7 @@
                     </div>
                 </div>
 
-                <!-- Modal -->
-                <div class="modal fade" id="addTask" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
 
-                        @await Component.InvokeAsync("FormInput")
-
-                    </div>
-                  </div>
-                </div>
 
                 <table class="table">
                   <thead>
@@ -96,7 +87,11 @@
                           <td width='200px'>
                               <span>@Task.title</span><br>
                               <span class="small"><a href=# id="taskEdit-@Task.id">Edit</a></span> |
-                              <span class="small"><a href=# id="taskDelete-@Task.id">Delete</a></span>
+                              <span class="small"><a href=# id="taskDelete-@Task.id" data-bs-toggle="modal" data-bs-target="#deleteTask">Delete</a></span>
+                                              
+                              <div class="modal fade" id="deleteTask" tabindex="-1" aria-hidden="true">
+                                @await Component.InvokeAsync("DeleteTask", new { id = Task.id})
+                              </div>
 
                           </td>
                           <td>
@@ -117,6 +112,21 @@
                 
             }
                         
+                            
+            <!-- Modal -->
+                <div class="modal fade" id="addTask" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+
+                        @await Component.InvokeAsync("FormInput")
+
+                    </div>
+                  </div>
+                </div>
+
+                                
+
+
             <nav>
               <ul class="pagination justify-content-end">
                 <li class="page-item disabled">
@@ -126,7 +136,7 @@
                 <li class="page-item"><a class="page-link" href="#">2</a></li>
                 <li class="page-item"><a class="page-link" href="#">3</a></li>
                 <li class="page-item">
-                  <a class="page-link" href="#">Next</a>
+                  <a class="page-link" href="/Home/Delete/">Next</a>
                 </li>
               </ul>
             </nav>

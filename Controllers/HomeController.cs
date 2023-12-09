@@ -44,16 +44,16 @@ namespace TaskManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Insert(Models.Tasks tasks)
+        public IActionResult Insert(Models.Tasks task)
         {
             try
             {
                 if (!ModelState.IsValid) throw new Exception("Input task is invalid.");
                 
-                _context.Add(tasks);
+                _context.Add(task);
                 _context.SaveChanges();
 
-                TempData["Success"] = $"Task {tasks.title} has been successfully saved.";
+                TempData["Success"] = $"Task {task.title} has been successfully saved.";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -63,15 +63,33 @@ namespace TaskManager.Controllers
             }
         }
 
-        public IActionResult Privacy()
+        public IActionResult Delete(int id)
         {
-            return View();
+            try
+            {
+                var task = _context.Tasks.Where(m=>m.id == id).FirstOrDefault();
+                _context.Remove(task);
+                _context.SaveChanges();
+                TempData["Success"] = $"Task {task.title} has been successfully removed.";
+
+                //throw new Exception();
+                return RedirectToAction("Index");
+            }catch(Exception ex)
+            {
+                TempData["Failed"] = $"Failed, {ex.Message}";
+                return RedirectToAction("Index");
+            }
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        //public IActionResult Privacy()
+        //{
+        //    return View();
+        //}
+
+        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        //public IActionResult Error()
+        //{
+        //    return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        //}
     }
 }
