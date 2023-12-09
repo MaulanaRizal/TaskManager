@@ -9,6 +9,7 @@
       "TaskManager/1.0.0": {
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "6.0.25",
+          "Microsoft.EntityFrameworkCore.Design": "6.0.25",
           "Microsoft.EntityFrameworkCore.Tools": "6.0.25",
           "MySql.Data.EntityFrameworkCore": "8.0.22",
           "MySqlConnector": "2.3.1",

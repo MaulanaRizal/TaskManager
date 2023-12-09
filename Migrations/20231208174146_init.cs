@@ -17,8 +17,10 @@ namespace TaskManager.Migrations
                 name: "Task",
                 columns: table => new
                 {
-                    MyProperty = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:AutoIncrement", true)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
+                        ,
                     title = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     description = table.Column<string>(type: "longtext", nullable: false)
@@ -29,7 +31,7 @@ namespace TaskManager.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Task", x => x.MyProperty);
+                    table.PrimaryKey("PK_Task", x => x.id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
         }
