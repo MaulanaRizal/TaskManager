@@ -86,13 +86,8 @@
                           <th scope="row">@(++numberRow)</th>
                           <td width='200px'>
                               <span>@Task.title</span><br>
-                              <span class="small"><a href=# id="taskEdit-@Task.id">Edit</a></span> |
-                              <span class="small"><a href=# id="taskDelete-@Task.id" data-bs-toggle="modal" data-bs-target="#deleteTask">Delete</a></span>
-                                              
-                              <div class="modal fade" id="deleteTask" tabindex="-1" aria-hidden="true">
-                                @await Component.InvokeAsync("DeleteTask", new { id = Task.id})
-                              </div>
-
+                              <span class="small"><a href=# id="taskEdit-@Task.id" >Edit</a></span> |
+                              <span class="small"><a href=# id="taskDelete-@Task.id" onclick="deleteTask(@Task.id,'@Task.title')" data-bs-toggle="modal" data-bs-target="#deleteTask">Delete</a></span>
                           </td>
                           <td>
                               @if(@Task.status.ToString() == "Compeled"){
@@ -115,15 +110,27 @@
                             
             <!-- Modal -->
                 <div class="modal fade" id="addTask" tabindex="-1" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-
                         @await Component.InvokeAsync("FormInput")
-
-                    </div>
-                  </div>
                 </div>
 
+                                            
+                <div class="modal fade" id="deleteTask" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Delet Task</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p id="bodyContext"></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <a id="linkDelete" href="#" class="btn btn-danger">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                                 
 
 
@@ -148,5 +155,11 @@
 @section Scripts{
     <script>
         $('.alert').delay(5000).fadeOut();
+
+        function deleteTask(id,title){
+            $('#bodyContext').text(`Are you sure delete task ${title}?`)
+            $('#linkDelete').attr("href",`/home/delete/${id}`)
+        }
+
     </script>
 }
