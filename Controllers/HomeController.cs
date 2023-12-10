@@ -222,6 +222,7 @@ namespace TaskManager.Controllers
                             }
                         }
                     }
+                    connection.Close();
 
                 }
 
