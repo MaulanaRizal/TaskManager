@@ -1,0 +1,38 @@
+﻿@model TaskManager.Models.Tasks;
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Delet Task</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+       <form asp-controller="Home" asp-action="Update" id="updateForm" method="post">
+
+        <div class="modal-body">
+            <div id="updateAlertDanger"></div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.title, new { @class = "form-label" } )
+                @Html.TextBoxFor(model => model.title, new { @class = "form-control" , @required = "required", @id = "titleUpdate" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.status, new { @class = "form-label" } )
+                @Html.DropDownListFor(model => model.status, Html.GetEnumSelectList<Status>(), new { @class = "form-control", @id = "statusUpdate"})
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.description, new { @class = "form-label" } )
+                @Html.TextAreaFor(m => m.description, new { @class = "form-control", @id = "descriptionUpdate"})
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    
+        </form>
+    </div>
+</div>

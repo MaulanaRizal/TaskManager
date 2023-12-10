@@ -27,8 +27,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Aldrical/source/repos/TaskManager/TaskManager/Views/Shared/Components/FormInput/Default.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcRm9ybUlucHV0XERlZmF1bHQuY3NodG1s
+[C:/Users/Aldrical/source/repos/TaskManager/TaskManager/Views/Shared/Components/ModalInput/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcTW9kYWxJbnB1dFxEZWZhdWx0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Aldrical/source/repos/TaskManager/TaskManager/Views/Shared/Components/ModalUpdate/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcTW9kYWxVcGRhdGVcRGVmYXVsdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Aldrical/source/repos/TaskManager/TaskManager/Views/Shared/Error.cshtml]

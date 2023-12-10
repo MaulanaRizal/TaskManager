@@ -86,19 +86,22 @@
                           <th scope="row">@(++numberRow)</th>
                           <td width='200px'>
                               <span>@Task.title</span><br>
-                              <span class="small"><a href=# id="taskEdit-@Task.id" >Edit</a></span> |
+                              <span class="small"><a href=# id="taskEdit-@Task.id" onclick="updateTask(@Task.id)" data-bs-toggle="modal" data-bs-target="#editTask">Edit</a></span> |
                               <span class="small"><a href=# id="taskDelete-@Task.id" onclick="deleteTask(@Task.id,'@Task.title')" data-bs-toggle="modal" data-bs-target="#deleteTask">Delete</a></span>
                           </td>
                           <td>
-                              @if(@Task.status.ToString() == "Compeled"){
+                              @if(@Task.status.ToString() == "Completed"){
                                 <span class="badge badge-completed">Completed</span>
                               }else if(@Task.status.ToString() == "InProgress"){
-                                <span class="badge badge-pending">Pending</span>
+                                <span class="badge badge-pending">In 
+                                    Progress</span>
                               }else if(@Task.status.ToString() == "Pending"){
-                                <span class="badge badge-inprogress">In Progress</span>
+                                <span class="badge badge-inprogress">Pending</span>
                               }
                           </td>
-                          <td>@Task.description</td>
+                          <td >
+                              <p style="max-height: 100px;overflow-y: auto;">@Task.description</p>
+                          </td>
                         </tr>
                     }
 
@@ -107,18 +110,17 @@
                 
             }
                         
-                            
-            <!-- Modal -->
+            <!-- Modal Input -->
                 <div class="modal fade" id="addTask" tabindex="-1" aria-hidden="true">
-                        @await Component.InvokeAsync("FormInput")
+                        @await Component.InvokeAsync("ModalInput")
                 </div>
 
-                                            
+            <!-- Modal Delete -->
                 <div class="modal fade" id="deleteTask" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Delet Task</h5>
+                                <h5 class="modal-title">Delete Task</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
@@ -132,7 +134,11 @@
                     </div>
                 </div>
                                 
-
+            <!-- Modal Edit -->
+                <div class="modal fade" id="editTask" tabindex="-1" aria-hidden="true">
+                    @await Component.InvokeAsync("ModalUpdate")
+                </div>
+                         
 
             <nav>
               <ul class="pagination justify-content-end">
@@ -160,6 +166,34 @@
             $('#bodyContext').text(`Are you sure delete task ${title}?`)
             $('#linkDelete').attr("href",`/home/delete/${id}`)
         }
+            
+        function updateTask(id){
+        $.ajax({
+            url : `/home/update/${id}`,
+            method : 'GET',
+            success : function(data){
+                console.log(data)
+
+                if(data.status == "success"){
+                    const task = data.task;
+                    $('#updateForm').attr('action',`/Home/Update/${task.id}`);
+                    $('#titleUpdate').val(task.title);
+                    $('#statusUpdate').val(task.status);
+                    $('#descriptionUpdate').val(task.description);
+                }
+
+                if(data.status == "failed"){
+                    const alert = `<div class="alert alert-danger" role="alert" id=updateAlertDanger>${data.message}</div>`
+                    
+                    $('#updateAlertDanger').html(alert)
+                    $('.alert').delay(5000).fadeOut();
+                }
+
+            }
+        })
+    }
+
+
 
     </script>
 }

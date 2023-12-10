@@ -21,8 +21,8 @@ namespace TaskManager.Controllers
             try
             {
                 //ViewBag.Success = TempData["Message"];
-                // memuat data dari table Task dan mengurutkannya dari id terbesar berdasarkan kolom createAt
-                var tasks = _context.Tasks.OrderByDescending(m=>m.CreateAt).ToList();
+                // memuat data dari table Task dan mengurutkannya dari tanggal terakhir diupdate terbesar berdasarkan kolom updateAt
+                var tasks = _context.Tasks.OrderByDescending(m=>m.UpdateAt).ToList();
                 var data = new {
                     Status = "Success",
                     Tasks = tasks,
@@ -50,6 +50,9 @@ namespace TaskManager.Controllers
             {
                 if (!ModelState.IsValid) throw new Exception("Input task is invalid.");
                 
+                task.CreateAt = DateTime.Now;
+                task.UpdateAt = DateTime.Now;
+
                 _context.Add(task);
                 _context.SaveChanges();
 
@@ -68,6 +71,7 @@ namespace TaskManager.Controllers
             try
             {
                 var task = _context.Tasks.Where(m=>m.id == id).FirstOrDefault();
+                
                 _context.Remove(task);
                 _context.SaveChanges();
                 TempData["Success"] = $"Task {task.title} has been successfully removed.";
@@ -75,6 +79,63 @@ namespace TaskManager.Controllers
                 //throw new Exception();
                 return RedirectToAction("Index");
             }catch(Exception ex)
+            {
+                TempData["Failed"] = $"Failed, {ex.Message}";
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Update(int id)
+        {
+            try
+            {
+                
+                var task = _context.Tasks.Where(m => m.id == id).FirstOrDefault();
+                if(task == null) throw new Exception("Task is doesn't exist.");
+                
+                var data = new
+                {
+                    status = "success",
+                    task = task,
+                };
+
+                return Json(data);
+            }catch (Exception ex)
+            {
+                var data = new
+                {
+                    status = "failed",
+                    message = ex.Message,
+                };
+                
+                return Json(data);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Update(int id, Tasks task)
+        {
+            try
+            {
+
+                var newTask = _context.Tasks.Where(m => m.id == id).FirstOrDefault();
+
+                if (!ModelState.IsValid) throw new Exception("Input task is invalid.");
+                if (newTask == null) throw new Exception("Please update your task again.");
+
+                newTask.title = task.title;
+                newTask.description = task.description;
+                newTask.status = task.status;
+                newTask.UpdateAt = DateTime.Now;
+
+                _context.Update(newTask);
+                _context.SaveChanges();
+
+                TempData["Success"] = $"Task {task.title} has been successfully saved.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
             {
                 TempData["Failed"] = $"Failed, {ex.Message}";
                 return RedirectToAction("Index");
