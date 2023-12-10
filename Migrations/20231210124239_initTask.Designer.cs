@@ -11,8 +11,8 @@ using TaskManager.Data;
 namespace TaskManager.Migrations
 {
     [DbContext(typeof(dataContext))]
-    [Migration("20231208174146_init")]
-    partial class init
+    [Migration("20231210124239_initTask")]
+    partial class initTask
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,9 +21,9 @@ namespace TaskManager.Migrations
                 .HasAnnotation("ProductVersion", "6.0.25")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("TaskManager.Models.Task", b =>
+            modelBuilder.Entity("TaskManager.Models.Tasks", b =>
                 {
-                    b.Property<int>("MyProperty")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
@@ -34,7 +34,6 @@ namespace TaskManager.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("description")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("status")
@@ -45,9 +44,9 @@ namespace TaskManager.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.HasKey("MyProperty");
+                    b.HasKey("id");
 
-                    b.ToTable("Task");
+                    b.ToTable("Tasks");
                 });
 #pragma warning restore 612, 618
         }

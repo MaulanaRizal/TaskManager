@@ -1,9 +1,8 @@
-﻿
-
-@{
-    ViewData["Title"] = "Home Page";
+﻿@{
+    ViewData["Title"] = "Task Manager";
     int numberRow = 0;
 }
+
 @section Styles{
     <style>
         .card{
@@ -27,6 +26,7 @@
         }
     </style>
 }
+
 <div class="container">
     <div class="card">
         <div class="card-body">
@@ -108,7 +108,7 @@
                         
             <!-- Modal Input -->
                 <div class="modal fade" id="addTask" tabindex="-1" aria-hidden="true">
-                        @await Component.InvokeAsync("ModalInput")
+                        @await Component.InvokeAsync("ModalInput") 
                 </div>
 
             <!-- Modal Delete -->

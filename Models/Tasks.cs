@@ -27,8 +27,8 @@ namespace TaskManager.Models
         public DateTime UpdateAt { get; set; }
     }
 
-    public enum Status
-    {
-        InProgress = 0, Pending = 1, Completed = 2
-    }
+}
+public enum Status
+{
+    InProgress = 0, Pending = 1, Completed = 2
 }

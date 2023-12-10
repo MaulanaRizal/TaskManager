@@ -18,15 +18,17 @@ namespace TaskManager.Controllers
 
         public IActionResult Index()
         {
+            // Note :
+            // Memuat data dari table Task dan mengurutkannya dari
+            // tanggal terakhir diupdate terbesar berdasarkan kolom updateAt.
+
             try
             {
-                //ViewBag.Success = TempData["Message"];
-                // memuat data dari table Task dan mengurutkannya dari tanggal terakhir diupdate terbesar berdasarkan kolom updateAt
                 var tasks = _context.Tasks.OrderByDescending(m=>m.UpdateAt);
                 var data = new {
                     Status = "Success",
                     Tasks = tasks,
-            };
+                    };
 
                 //throw new Exception(); // ← note: uncomment untuk test error handling
 
@@ -46,12 +48,16 @@ namespace TaskManager.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Insert(Models.Tasks task)
         {
+            // Note : Melakukan proses menambah data task
+
             try
             {
                 if (!ModelState.IsValid) throw new Exception("Input task is invalid.");
                 
                 task.CreateAt = DateTime.Now;
                 task.UpdateAt = DateTime.Now;
+
+                //throw new Exception(); //Uncomment untuk uji error handling
 
                 _context.Add(task);
                 _context.SaveChanges();
@@ -68,6 +74,7 @@ namespace TaskManager.Controllers
 
         public IActionResult Delete(int id)
         {
+            //Note : Melakuakn penghapusan data berdasarkan id
             try
             {
                 var task = _context.Tasks.Where(m=>m.id == id).FirstOrDefault();
@@ -76,7 +83,7 @@ namespace TaskManager.Controllers
                 _context.SaveChanges();
                 TempData["Success"] = $"Task {task.title} has been successfully removed.";
 
-                //throw new Exception();
+                //throw new Exception(); //Uncomment untuk uji error handling
                 return RedirectToAction("Index");
             }catch(Exception ex)
             {
@@ -88,9 +95,10 @@ namespace TaskManager.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
+            // Note : Melakukan proses update data berdasarkan id
+
             try
             {
-                
                 var task = _context.Tasks.Where(m => m.id == id).FirstOrDefault();
                 if(task == null) throw new Exception("Task is doesn't exist.");
                 
@@ -99,6 +107,8 @@ namespace TaskManager.Controllers
                     status = "success",
                     task = task,
                 };
+
+                //throw new Exception(); //Uncomment untuk uji error handling
 
                 return Json(data);
             }catch (Exception ex)
@@ -129,6 +139,8 @@ namespace TaskManager.Controllers
                 newTask.status = task.status;
                 newTask.UpdateAt = DateTime.Now;
 
+                //throw new Exception(); //Uncomment untuk uji error handling
+
                 _context.Update(newTask);
                 _context.SaveChanges();
 
@@ -146,11 +158,13 @@ namespace TaskManager.Controllers
         {
             try
             {
+                // Note : Melakuakn pencarian kata yang tersimpan pada kolom title atau deskripsi
+
                 var q = query == null ? "" : query.ToLower();
-                var temp = _context.Tasks;
                 var result = (from t in _context.Tasks
                               let status = t.status.ToString()
-                              where t.title.Contains(q) || t.description.Contains(q) || t.status.ToString().Contains(q, StringComparison.OrdinalIgnoreCase)
+                              //where t.title.Contains(q) || t.description.Contains(q) || t.status.ToString().Contains(q, StringComparison.OrdinalIgnoreCase)
+                              where t.title.Contains(q) || t.description.Contains(q) 
                               select new
                               {
                                   t.id,
@@ -163,6 +177,8 @@ namespace TaskManager.Controllers
                               })
                               .OrderByDescending(m=>m.UpdateAt);
 
+                //throw new Exception(); //Uncomment untuk uji error handling
+
                 return Json(result);
             }catch(Exception ex)
             {
@@ -170,16 +186,5 @@ namespace TaskManager.Controllers
                 return RedirectToAction("Index");
             }
         }
-
-        //public IActionResult Privacy()
-        //{
-        //    return View();
-        //}
-
-        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        //public IActionResult Error()
-        //{
-        //    return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        //}
     }
 }

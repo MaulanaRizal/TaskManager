@@ -15,16 +15,8 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\Aldrical\source\repos\TaskManager\TaskManager
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/Aldrical/source/repos/TaskManager/TaskManager/Views/Home/Default.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxEZWZhdWx0LmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/Aldrical/source/repos/TaskManager/TaskManager/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Aldrical/source/repos/TaskManager/TaskManager/Views/Home/Privacy.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Aldrical/source/repos/TaskManager/TaskManager/Views/Shared/Components/ModalInput/Default.cshtml]
