@@ -39,7 +39,6 @@
                 <div class="alert alert-danger" role="alert">
                   Oh no!, @(Model.Message)
                 </div>
-                
             }
             
             @if(TempData["Success"] != null)
@@ -61,13 +60,11 @@
                             
                 <div class="col-md-4 float-end mb-3">
                     <div class="input-group ">
-                      <input type="text" class="form-control" placeholder="Search Task..." >
-                      <button class="btn btn-outline-secondary" type="button">Search</button>
+                      <input type="text" id="searchBox" class="form-control" placeholder="Search Task..." >
+                      <button class="btn btn-outline-secondary" type="button" id="searchButton" value="">Search</button>
                       <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#addTask">Add</button>
                     </div>
                 </div>
-
-
 
                 <table class="table">
                   <thead>
@@ -78,7 +75,7 @@
                       <th scope="col">Description</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="tableBody">
                     
                     @foreach(var Task in Model.Tasks)
                     {
@@ -93,10 +90,9 @@
                               @if(@Task.status.ToString() == "Completed"){
                                 <span class="badge badge-completed">Completed</span>
                               }else if(@Task.status.ToString() == "InProgress"){
-                                <span class="badge badge-pending">In 
-                                    Progress</span>
+                                <span class="badge badge-inprogress">In Progress</span>
                               }else if(@Task.status.ToString() == "Pending"){
-                                <span class="badge badge-inprogress">Pending</span>
+                                <span class="badge badge-pending">Pending</span>
                               }
                           </td>
                           <td >
@@ -138,21 +134,7 @@
                 <div class="modal fade" id="editTask" tabindex="-1" aria-hidden="true">
                     @await Component.InvokeAsync("ModalUpdate")
                 </div>
-                         
 
-            <nav>
-              <ul class="pagination justify-content-end">
-                <li class="page-item disabled">
-                  <a class="page-link" href="#" tabindex="-1">Previous</a>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                  <a class="page-link" href="/Home/Delete/">Next</a>
-                </li>
-              </ul>
-            </nav>
         </div>
     </div>
 
@@ -162,37 +144,101 @@
     <script>
         $('.alert').delay(5000).fadeOut();
 
+        function updateTask(id){
+            $.ajax({
+                url : `/home/update/${id}`,
+                method : 'GET',
+                success : function(data){
+                    console.log(data)
+
+                    if(data.status == "success"){
+                        const task = data.task;
+                        $('#updateForm').attr('action',`/Home/Update/${task.id}`);
+                        $('#titleUpdate').val(task.title);
+                        $('#statusUpdate').val(task.status);
+                        $('#descriptionUpdate').val(task.description);
+                    }
+
+                    if(data.status == "failed"){
+                        const alert = `<div class="alert alert-danger" role="alert" id=updateAlertDanger>${data.message}</div>`
+                    
+                        $('#updateAlertDanger').html(alert)
+                        $('.alert').delay(5000).fadeOut();
+                    }
+
+                }
+            })
+        }
+
         function deleteTask(id,title){
             $('#bodyContext').text(`Are you sure delete task ${title}?`)
             $('#linkDelete').attr("href",`/home/delete/${id}`)
         }
             
-        function updateTask(id){
-        $.ajax({
-            url : `/home/update/${id}`,
-            method : 'GET',
-            success : function(data){
-                console.log(data)
-
-                if(data.status == "success"){
-                    const task = data.task;
-                    $('#updateForm').attr('action',`/Home/Update/${task.id}`);
-                    $('#titleUpdate').val(task.title);
-                    $('#statusUpdate').val(task.status);
-                    $('#descriptionUpdate').val(task.description);
-                }
-
-                if(data.status == "failed"){
-                    const alert = `<div class="alert alert-danger" role="alert" id=updateAlertDanger>${data.message}</div>`
-                    
-                    $('#updateAlertDanger').html(alert)
-                    $('.alert').delay(5000).fadeOut();
-                }
-
+        $('#searchBox').keypress(function(event){
+            if(event.which === 13){
+                searchTask();
             }
         })
-    }
 
+        $('#searchButton').on('click', function(){
+            searchTask();
+        })
+
+
+
+        function searchTask(){
+            const query = $('#searchBox').val();
+
+            $.ajax({
+                url : '/home/search',
+                method : 'GET',
+                contentType: "application/json",
+                data : {
+                    query : query,
+                },
+                success : function(result){
+                    let num = 0;
+                    let rows = "";
+                    result.forEach(function(item){
+
+                        const titleContent = `<span>${item.title}</span><br>
+                                <span class="small"><a href="#" id="taskEdit-${item.id}" onclick="updateTask(${item.id})" data-bs-toggle="modal" data-bs-target="#editTask">Edit</a></span> |
+                                <span class="small"><a href="#" id="taskDelete-${item.id}" onclick="deleteTask(${item.id},'${item.title}')" data-bs-toggle="modal" data-bs-target="#deleteTask">Delete</a></span>
+                                `;
+
+                        let statusContent = "";
+                        if(item.status == "Pending"){
+                            statusContent = `<span class="badge badge-pending">Pending</span>`
+                        }else if(item.status == "InProgress"){
+                            statusContent = `<span class="badge badge-inprogress">In Progress</span>`
+                        }else if(item.status == "Completed"){
+                            statusContent = `<span class="badge badge-completed">Completed</span>`
+                        }
+
+                        const descriptionContent = `<p style="max-height: 100px;overflow-y: auto;">${item.description}</p>`
+
+                        const row = `
+                        <tr>
+                            <th scope="row">${++num}</th>
+                            <td width="200px">
+                                ${titleContent}
+                            </td>
+                            <td>
+                                ${statusContent}
+                            </td>
+                            <td>
+                                ${descriptionContent}
+                            </td>
+                        </tr>`;
+
+                        rows = rows + row;
+                    })
+                    $('#tableBody').html(rows);
+                }
+            })
+
+        }
 
 
     </script>

@@ -22,7 +22,7 @@ namespace TaskManager.Controllers
             {
                 //ViewBag.Success = TempData["Message"];
                 // memuat data dari table Task dan mengurutkannya dari tanggal terakhir diupdate terbesar berdasarkan kolom updateAt
-                var tasks = _context.Tasks.OrderByDescending(m=>m.UpdateAt).ToList();
+                var tasks = _context.Tasks.OrderByDescending(m=>m.UpdateAt);
                 var data = new {
                     Status = "Success",
                     Tasks = tasks,
@@ -136,6 +136,35 @@ namespace TaskManager.Controllers
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
+            {
+                TempData["Failed"] = $"Failed, {ex.Message}";
+                return RedirectToAction("Index");
+            }
+        }
+
+        public async Task<IActionResult> Search(string query)
+        {
+            try
+            {
+                var q = query == null ? "" : query.ToLower();
+                var temp = _context.Tasks;
+                var result = (from t in _context.Tasks
+                              let status = t.status.ToString()
+                              where t.title.Contains(q) || t.description.Contains(q) || t.status.ToString().Contains(q, StringComparison.OrdinalIgnoreCase)
+                              select new
+                              {
+                                  t.id,
+                                  t.title,
+                                  status,
+                                  t.description,
+                                  t.CreateAt,
+                                  t.UpdateAt
+
+                              })
+                              .OrderByDescending(m=>m.UpdateAt);
+
+                return Json(result);
+            }catch(Exception ex)
             {
                 TempData["Failed"] = $"Failed, {ex.Message}";
                 return RedirectToAction("Index");

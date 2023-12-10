@@ -44,7 +44,7 @@ namespace TaskManager.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("Tasks", (string)null);
                 });
 #pragma warning restore 612, 618
         }

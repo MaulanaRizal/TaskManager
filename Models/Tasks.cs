@@ -20,13 +20,15 @@ namespace TaskManager.Models
         [Required]
         [Display(Name = "Status :")]
         public Status status { get; set; }
+
         [Required]
         public DateTime CreateAt { get; set; }
+
         public DateTime UpdateAt { get; set; }
     }
 
     public enum Status
     {
-        InProgress, Pending, Completed
+        InProgress = 0, Pending = 1, Completed = 2
     }
 }
