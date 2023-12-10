@@ -210,6 +210,7 @@ namespace TaskManager.Controllers
                             {
                                 var TaskItem = new modelTask();
 
+                                TaskItem.id = (int)reader["id"];
                                 TaskItem.title = reader["title"].ToString();
                                 TaskItem.status = statusList[(int)reader["status"]];
                                 TaskItem.description = reader["description"].ToString();
