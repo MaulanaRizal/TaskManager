@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 using System.Diagnostics;
 using TaskManager.Data;
 using TaskManager.Models;
@@ -9,11 +10,13 @@ namespace TaskManager.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly dataContext _context;
+        private readonly IConfiguration _configuration;
 
-        public HomeController(ILogger<HomeController> logger, dataContext dataContext)
+        public HomeController(ILogger<HomeController> logger, dataContext dataContext, IConfiguration configuration)
         {
             _logger = logger;
             _context = dataContext;
+            _configuration = configuration;
         }
 
         public IActionResult Index()
@@ -154,32 +157,76 @@ namespace TaskManager.Controllers
             }
         }
 
+        private class modelTask
+        {
+            public int id { get; set; }
+
+            public string? title { get; set; }
+
+            public string? description { get; set; }
+
+            public string status { get; set; }
+
+            public DateTime CreateAt { get; set; }
+
+            public DateTime UpdateAt { get; set; }
+        }
+
         public async Task<IActionResult> Search(string query)
         {
             try
             {
-                // Note : Melakuakn pencarian kata yang tersimpan pada kolom title atau deskripsi
+                // Note :
+                // Melakuakn pencarian kata yang tersimpan pada kolom title atau deskripsi atau status
 
                 var q = query == null ? "" : query.ToLower();
-                var result = (from t in _context.Tasks
-                              let status = t.status.ToString()
-                              //where t.title.Contains(q) || t.description.Contains(q) || t.status.ToString().Contains(q, StringComparison.OrdinalIgnoreCase)
-                              where t.title.Contains(q) || t.description.Contains(q) 
-                              select new
-                              {
-                                  t.id,
-                                  t.title,
-                                  status,
-                                  t.description,
-                                  t.CreateAt,
-                                  t.UpdateAt
+                string conn = _configuration.GetConnectionString("DefaultConnection");
+                var TaskList = new List<modelTask>();
 
-                              })
-                              .OrderByDescending(m=>m.UpdateAt);
+                // InProgress = 0, Pending = 1, Completed = 2
+                // ↓ proses generate query apabila parameter query mirip dengan status ↓
+                string[] statusList = { "In Progress", "Pending", "Completed" };
+                string indicesString = string.Join(",", statusList
+                                             .Select((value, index) => new { Value = value, Index = index })
+                                             .Where(item => item.Value.ToLower().Contains(q))
+                                             .Select(item => item.Index));
+                string querySearchStatus = indicesString.Length > 0 ? $"OR status in ({indicesString})" : "";
+
+                using (MySqlConnection connection = new MySqlConnection(conn))
+                {
+                    connection.Open();
+
+                    string sql = $"SELECT * FROM `tasks` where (title like @Param1 OR description like @Param2) {querySearchStatus} ";
+
+                    using (MySqlCommand cmd = new MySqlCommand(sql, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@Param1", $"%{q}%");
+                        cmd.Parameters.AddWithValue("@Param2", $"%{q}%");
+
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            var temp = reader;
+                            while (reader.Read())
+                            {
+                                var TaskItem = new modelTask();
+
+                                TaskItem.title = reader["title"].ToString();
+                                TaskItem.status = statusList[(int)reader["status"]];
+                                TaskItem.description = reader["description"].ToString();
+                                TaskItem.CreateAt =  DateTime.Parse(reader["CreateAt"].ToString());
+                                TaskItem.UpdateAt = DateTime.Parse(reader["UpdateAt"].ToString());
+
+                                TaskList.Add(TaskItem);
+
+                            }
+                        }
+                    }
+
+                }
 
                 //throw new Exception(); //Uncomment untuk uji error handling
 
-                return Json(result);
+                return Json(TaskList.OrderByDescending(m=>m.UpdateAt));
             }catch(Exception ex)
             {
                 TempData["Failed"] = $"Failed, {ex.Message}";
